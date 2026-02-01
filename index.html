@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fresh Lab – Pflege-System</title>
+
+  <style>
+    :root {
+      --bg: #f4f7f8;
+      --bg-card: #ffffff;
+      --text: #333;
+      --accent: #5a8fa8;
+      --accent-dark: #467a92;
+      --header-bg: #5a8fa8;
+      --hero-bg: #eef5f7;
+      --border-soft: #e2e8f0;
+    }
+
+    body.dark {
+      --bg: #020617;
+      --bg-card: #020617;
+      --text: #e5e7eb;
+      --accent: #60a5fa;
+      --accent-dark: #3b82f6;
+      --header-bg: #020617;
+      --hero-bg: #020617;
+      --border-soft: #1f2937;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      transition: background 0.25s ease, color 0.25s ease;
+    }
+
+    a { color: var(--accent); text-decoration: none; }
+
+    /* HEADER */
+    header {
+      background: var(--header-bg);
+      color: white;
+      padding: 16px 16px 12px;
+      text-align: center;
+    }
+
+    .header-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      position: relative;
+    }
+
+    /* Hamburger */
+    #hamburger {
+      position: absolute;
+      left: 0;
+      top: 0;
+      cursor: pointer;
+      width: 26px;
+      padding: 6px 0;
+    }
+    #hamburger div {
+      height: 3px;
+      background: white;
+      margin: 3px 0;
+      border-radius: 999px;
+      transition: 0.2s ease;
+    }
+    #hamburger.active div:nth-child(1) {
+      transform: translateY(6px) rotate(45deg);
+    }
+    #hamburger.active div:nth-child(2) {
+      opacity: 0;
+    }
+    #hamburger.active div:nth-child(3) {
+      transform: translateY(-6px) rotate(-45deg);
+    }
+
+    /* Dark Toggle */
+    .toggle-wrapper {
+      position: absolute;
+      right: 0;
+      top: 0;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.8rem;
+    }
+    .toggle {
+      width: 38px;
+      height: 18px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.3);
+      position: relative;
+      cursor: pointer;
+    }
+    .toggle-circle {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: white;
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      transition: 0.2s ease;
+    }
+    body.dark .toggle-circle {
+      transform: translateX(18px);
+    }
+
+    .logo-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+    .logo-icon {
+      width: 36px;
+      height: 36px;
+    }
+
+    nav {
+      display: flex;
+      gap: 12px;
+      font-size: 0.9rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    nav a { color: white; font-weight: 600; }
+
+    /* Mobile Menü */
+    #mobileMenu {
+      display: none;
+      margin-top: 8px;
+    }
+    #mobileMenu a {
+      display: block;
+      padding: 6px 0;
+      color: white;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    /* HERO */
+    .hero {
+      text-align: center;
+      padding: 40px 16px 30px;
+      background: var(--hero-bg);
+    }
+    .hero p {
+      max-width: 520px;
+      margin: 0 auto 16px;
+      opacity: 0.9;
+    }
+    .btn {
+      display: inline-block;
+      background: var(--accent);
+      color: white;
+      padding: 8px 16px;
+      border-radius: 999px;
+      font-size: 0.9rem;
+    }
+    .btn:hover { background: var(--accent-dark); }
+
+    /* SECTIONS */
+    section {
+      padding: 22px 16px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    h2 { margin-top: 0; margin-bottom: 12px; font-size: 1.4rem; }
+
+    .card {
+      background: var(--bg-card);
+      border-radius: 10px;
+      border: 1px solid var(--border-soft);
+      padding: 14px 14px 16px;
+      margin-bottom: 18px;
+    }
+
+    .products .row,
+    .cart-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+      cursor: pointer;
+    }
+
+    .row span strong {
+      display: block;
+    }
+
+    button {
+      background: var(--accent);
+      color: white;
+      border: none;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+    button:hover { background: var(--accent-dark); }
+
+    .total {
+      text-align: right;
+      font-weight: 600;
+      margin-top: 8px;
+    }
+
+    .dashboard-list div {
+      padding: 6px 0;
+      border-bottom: 1px solid var(--border-soft);
+      font-size: 0.9rem;
+    }
+    .dashboard-list div:last-child { border-bottom: none; }
+
+    footer {
+      padding: 16px;
+      text-align: center;
+      font-size: 0.85rem;
+      border-top: 1px solid var(--border-soft);
+      margin-top: 20px;
+    }
+
+    /* SLIDE-UP PANEL */
+    #infoPanelOverlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.45);
+      backdrop-filter: blur(3px);
+      display: none;
+      z-index: 999;
+    }
+
+    #infoPanel {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: -100%;
+      background: var(--bg-card);
+      border-radius: 18px 18px 0 0;
+      padding: 20px;
+      max-height: 80vh;
+      overflow-y: auto;
+      box-shadow: 0 -8px 30px rgba(0,0,0,0.25);
+      transition: bottom 0.35s ease;
+      z-index: 1000;
+    }
+
+    #infoPanel.open {
+      bottom: 0;
+    }
+
+    #infoPanelHeader {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+
+    #infoPanelHeader h2 {
+      margin: 0;
+      font-size: 1.3rem;
+    }
+
+    #closeInfoPanel {
+      background: none;
+      border: none;
+      font-size: 1.4rem;
+      cursor: pointer;
+      color: var(--text);
+    }
+
+    #infoContent h3 {
+      margin-top: 14px;
+      margin-bottom: 6px;
+      font-size: 1rem;
+    }
+
+    #infoContent p,
+    #infoContent li {
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    .infoCartBtn {
+      width: 100%;
+      margin-top: 20px;
+      background: var(--accent);
+      color: white;
+      padding: 12px;
+      border-radius: 999px;
+      border: none;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
+    @media (max-width: 720px) {
+      nav { display: none; }
+      #mobileMenu { display: block; }
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <div class="header-inner">
+
+    <!-- Hamburger -->
+    <div id="hamburger">
+      <div></div><div></div><div></div>
+    </div>
+
+    <!-- Dark Mode -->
+    <div class="toggle-wrapper">
+      <div class="toggle" id="darkToggle">
+        <div class="toggle-circle"></div>
+      </div>
+    </div>
+
+    <!-- Logo -->
+    <div class="logo-wrapper">
+      <svg class="logo-icon" viewBox="0 0 64 64">
+        <path d="M32 6 C22 20 14 30 14 40 C14 50 22 58 32 58 C42 58 50 50 50 40 C50 30 42 20 32 6 Z"
+              fill="none" stroke="#000" stroke-width="2.5"/>
+        <path d="M32 11 C24 22 18 30 18 38 C18 47 24 53 32 53 C40 53 46 47 46 38 C46 30 40 22 32 11 Z"
+              fill="none" stroke="#000" stroke-width="2.2"/>
+        <path d="M32 16 C26 24 22 30 22 36 C22 43 26 47 32 47 C38 47 42 43 42 36 C42 30 38 24 32 16 Z"
+              fill="#000"/>
+      </svg>
+      <div style="font-size:1.3rem; font-weight:700;">Fresh Lab</div>
+      <div style="font-size:0.8rem; opacity:0.9;">Pflege-Logik statt Produkt-Chaos</div>
+    </div>
+
+    <!-- Desktop Nav -->
+    <nav>
+      <a href="#produkte">Öle</a>
+      <a href="#system">System</a>
+      <a href="#preise">Preise</a>
+      <a href="#dashboard">Übersicht</a>
+      <a href="#kontakt">Kontakt</a>
+    </nav>
+
+    <!-- Mobile Nav -->
+    <div id="mobileMenu">
+      <a href="#produkte">Öle</a>
+      <a href="#system">System</a>
+      <a href="#preise">Preise</a>
+      <a href="#dashboard">Übersicht</a>
+      <a href="#kontakt">Kontakt</a>
+    </div>
+
+  </div>
+</header>
+
+<section class="hero">
+  <h1>Systematische Hautpflege beginnt hier</h1>
+  <p>Keine Zufallsmischungen mehr – klare Rituale, Regeln & Empfehlungen.</p>
+  <a href="#preise" class="btn">Jetzt starten</a>
+</section>
+
+<section id="produkte">
+  <h2>Unsere Öle</h2>
+  <div class="card products">
+    <div class="row" onclick="openInfo('Feuchtigkeitskonzentrat')">
+      <span><strong>Feuchtigkeitskonzentrat</strong><small>Hyaluron</small></span>
+      <span>29,90 €</span>
+      <button onclick="event.stopPropagation(); addToCart('Feuchtigkeitskonzentrat', 29.90)">In den Warenkorb</button>
+    </div>
+    <div class="row" onclick="openInfo('Barriereschutz')">
+      <span><strong>Barriereschutz</strong><small>Squalan</small></span>
+      <span>34,90 €</span>
+      <button onclick="event.stopPropagation(); addToCart('Barriereschutz', 34.90)">In den Warenkorb</button>
+    </div>
+    <div class="row" onclick="openInfo('Aktivierungsöl')">
+      <span><strong>Aktivierungsöl</strong><small>Vitamin C</small></span>
+      <span>39,90 €</span>
+      <button onclick="event.stopPropagation(); addToCart('Aktivierungsöl', 39.90)">In den Warenkorb</button>
+    </div>
+    <div class="row" onclick="openInfo('Repair-Öl')">
+      <span><strong>Repair-Öl</strong><small>Retinol</small></span>
+      <span>44,90 €</span>
+      <button onclick="event.stopPropagation(); addToCart('Repair-Öl', 44.90)">In den Warenkorb</button>
+    </div>
+  </div>
+</section>
+
+<section id="system">
+  <h2>Unser System</h2>
+  <div class="card">
+    <ul>
+      <li>🌿 Fresh Scan – Analyse & Typisierung</li>
+      <li>📅 Rituale – Morgen & Abend</li>
+      <li>⚖️ Kombinationslogik & Reihenfolge</li>
+      <li>🛡️ Sicherheit & No-Go-Kombis</li>
+    </ul>
+  </div>
+</section>
+
+<section id="preise">
+  <h2>Preise</h2>
+  <div class="card products">
+    <div class="row" onclick="openInfo('Fresh Scan')">
+      <span><strong>Fresh Scan</strong></span>
+      <span>49 €</span>
+      <button onclick="event.stopPropagation(); addToCart('Fresh Scan', 49)">In den Warenkorb</button>
+    </div>
+    <div class="row" onclick="openInfo('Personal System')">
+      <span><strong>Personal System</strong></span>
+      <span>199 €</span>
+      <button onclick="event.stopPropagation(); addToCart('Personal System', 199)">In den Warenkorb</button>
+    </div>
+    <div class="row" onclick="openInfo('Jahrespflegeplan')">
+      <span><strong>Jahrespflegeplan</strong></span>
+      <span>399 €</span>
+      <button onclick="event.stopPropagation(); addToCart('Jahrespflegeplan', 399)">In den Warenkorb</button>
+    </div>
+    <div class="row" onclick="openInfo('Fresh Lab Circle')">
+      <span><strong>Fresh Lab Circle</strong><small>Membership</small></span>
+      <span>29 €/Monat</span>
+      <button onclick="event.stopPropagation(); addToCart('Fresh Lab Circle', 29)">In den Warenkorb</button>
+    </div>
+  </div>
+</section>
+
+<section class="cart">
+  <h2>Warenkorb</h2>
+  <div class="card">
+    <div id="cartItems"></div>
+    <div class="total" id="totalPrice">Gesamt: 0,00 €</div>
+
+    <!-- PayPal -->
+    <div id="paypal-buttons" style="margin-top:10px;"></div>
+
+    <!-- Stripe -->
+    <div style="margin-top:10px;">
+      <a href="YOUR_STRIPE_CHECKOUT_LINK"
+         style="display:block; background:#000; color:#fff; padding:8px 12px; text-align:center; border-radius:999px;">
+        Mit Karte bezahlen (Stripe)
+      </a>
+    </div>
+  </div>
+</section>
+
+<section id="dashboard">
+  <h2>Übersicht</h2>
+  <div class="card">
+    <h3 style="margin-top:0; font-size:1rem;">Letzte Bestellungen</h3>
+    <div id="orderHistory" class="dashboard-list">
+      <div style="opacity:0.7;">Noch keine Bestellungen.</div>
+    </div>
+  </div>
+</section>
+
+<section id="kontakt">
+  <h2>Kontakt</h2>
+  <div class="card">
+    <p>Email: <a href="mailto:kontakt@freshlab.de">kontakt@freshlab.de</a></p>
+  </div>
+</section>
+
+<footer>
+  <p>Fresh Lab – Pflege-System statt Produkt-Chaos</p>
+</footer>
+
+<!-- SLIDE-UP PANEL -->
+<div id="infoPanelOverlay"></div>
+<div id="infoPanel">
+  <div id="infoPanelHeader">
+    <h2 id="infoTitle"></h2>
+    <button id="closeInfoPanel">✕</button>
+  </div>
+  <div id="infoContent"></div>
+  <button id="infoAddToCart" class="infoCartBtn">In den Warenkorb</button>
+</div>
+
+<!-- PayPal SDK -->
+<script src="https://www.paypal.com/sdk/js?client-id=YOUR_PAYPAL_CLIENT_ID&currency=EUR"></script>
+
+<script>
+  let cart = [];
+  const ORDER_HISTORY_KEY = "freshlab_history";
+  const DARK_MODE_KEY = "freshlab_dark";
+
+  function addToCart(name, price) {
+    const existing = cart.find(i => i.name === name);
+    if (existing) existing.quantity++;
+    else cart.push({ name, price, quantity: 1 });
+    renderCart();
+  }
+
+  function removeItem(name) {
+    cart = cart.filter(i => i.name !== name);
+    renderCart();
+  }
+
+  function calculateTotal() {
+    return cart.reduce((sum, i) => sum + i.price * i.quantity, 0);
+  }
+
+  function renderCart() {
+    const div = document.getElementById("cartItems");
+    div.innerHTML = "";
+    let total = 0;
+
+    cart.forEach(i => {
+      const line = i.price * i.quantity;
+      total += line;
+      div.innerHTML += `
+        <div class="cart-item">
+          <span>${i.name} (${i.quantity}x)</span>
+          <span>${line.toFixed(2).replace('.', ',')} €</span>
+          <button onclick="removeItem('${i.name}')">✕</button>
+        </div>
+      `;
+    });
+
+    document.getElementById("totalPrice").innerText =
+      "Gesamt: " + total.toFixed(2).replace('.', ',') + " €";
+  }
+
+  function saveOrder(order) {
+    let history = JSON.parse(localStorage.getItem(ORDER_HISTORY_KEY) || "[]");
+    history.unshift(order);
+    history = history.slice(0, 10);
+    localStorage.setItem(ORDER_HISTORY_KEY, JSON.stringify(history));
+    renderHistory();
+  }
+
+  function renderHistory() {
+    const div = document.getElementById("orderHistory");
+    let history = JSON.parse(localStorage.getItem(ORDER_HISTORY_KEY) || "[]");
+
+    if (!history.length) {
+      div.innerHTML = '<div style="opacity:0.7;">Noch keine Bestellungen.</div>';
+      return;
+    }
+
+    div.innerHTML = "";
+    history.forEach(h => {
+      const date = new Date(h.date).toLocaleString("de-DE");
+      const items = h.items.map(i => `${i.name} (${i.quantity}x)`).join(", ");
+      div.innerHTML += `
+        <div>
+          <strong>${h.total.toFixed(2).replace('.', ',')} €</strong> – ${items}<br>
+          <span style="font-size:0.8rem; opacity:0.7;">${date}</span>
+        </div>
+      `;
+    });
+  }
+
+  // Produkt-Infos (wissenschaftlich)
+  const productInfo = {
+    "Feuchtigkeitskonzentrat": {
+      title: "Feuchtigkeitskonzentrat – Hyaluron-Komplex",
+      price: 29.90,
+      text: `
+<h3>Wissenschaftlicher Hintergrund</h3>
+<p>Hyaluronsäure ist ein lineares Polysaccharid, das Wasser bis zum 1000‑fachen seines Eigengewichts binden kann. Diese Formulierung kombiniert hoch- und niedermolekulare Hyaluronfraktionen, um sowohl die Hydratation der Hornschicht (Stratum corneum) als auch der tieferen epidermalen Schichten zu verbessern.</p>
+<h3>Dermatologische Wirkung</h3>
+<ul>
+<li>Erhöht die Wasserbindungskapazität der Epidermis</li>
+<li>Reduziert transepidermalen Wasserverlust (TEWL)</li>
+<li>Verbessert Elastizität und Hautglätte</li>
+<li>Unterstützt die Regeneration der Hautbarriere</li>
+</ul>
+<h3>Inhaltsstoffe</h3>
+<ul>
+<li>Hyaluronsäure (verschiedene Molekulargewichte)</li>
+<li>Squalan (hautidentisches Lipid, oxidationsstabil)</li>
+<li>Vitamin E (antioxidativ)</li>
+</ul>
+<h3>Anwendung</h3>
+<p>2–3 Tropfen auf feuchte Haut. Ideal nach Reinigung und vor okklusiven Ölen. Nicht direkt nach starken Säuren anwenden.</p>
+<h3>Sicherheit</h3>
+<p>Sehr gut verträglich. Keine UV‑Sensibilisierung. Für alle Hauttypen geeignet.</p>
+`
+    },
+    "Barriereschutz": {
+      title: "Barriereschutz – Squalan-Komplex",
+      price: 34.90,
+      text: `
+<h3>Wissenschaftlicher Hintergrund</h3>
+<p>Squalan ist ein vollständig hydriertes Derivat von Squalen, einem natürlichen Bestandteil des menschlichen Sebums. Es ist oxidationsstabil und dringt tief in die Lipidmatrix der Hautbarriere ein.</p>
+<h3>Dermatologische Wirkung</h3>
+<ul>
+<li>Stärkt die Lipidbarriere</li>
+<li>Reduziert Feuchtigkeitsverlust</li>
+<li>Verbessert Hautelastizität</li>
+<li>Ideal bei Barrierestörungen</li>
+</ul>
+<h3>Inhaltsstoffe</h3>
+<ul>
+<li>Squalan (pflanzlich, hochrein)</li>
+<li>Tocopherol (Vitamin E)</li>
+</ul>
+<h3>Anwendung</h3>
+<p>3–4 Tropfen auf trockene oder leicht feuchte Haut. Perfekt als letzter Schritt der Routine.</p>
+<h3>Sicherheit</h3>
+<p>Nicht komedogen, extrem gut verträglich.</p>
+`
+    },
+    "Aktivierungsöl": {
+      title: "Aktivierungsöl – Vitamin‑C‑Komplex",
+      price: 39.90,
+      text: `
+<h3>Wissenschaftlicher Hintergrund</h3>
+<p>Vitamin C (Ascorbyl Tetraisopalmitate) ist eine lipophile, hochstabile Form von Vitamin C mit hervorragender Penetrationsfähigkeit in die Dermis. Es wirkt antioxidativ, pigmentregulierend und stimuliert die Kollagensynthese.</p>
+<h3>Dermatologische Wirkung</h3>
+<ul>
+<li>Reduktion oxidativen Stresses</li>
+<li>Aufhellung von Hyperpigmentierungen</li>
+<li>Stimulation von Kollagen Typ I</li>
+<li>Schutz vor UV‑induzierten Schäden</li>
+</ul>
+<h3>Inhaltsstoffe</h3>
+<ul>
+<li>Ascorbyl Tetraisopalmitate</li>
+<li>Jojobaöl</li>
+<li>Vitamin E</li>
+</ul>
+<h3>Anwendung</h3>
+<p>Morgens 2–3 Tropfen. Immer mit UV‑Schutz kombinieren.</p>
+<h3>Sicherheit</h3>
+<p>Sehr stabil, geringes Irritationsrisiko.</p>
+`
+    },
+    "Repair-Öl": {
+      title: "Repair‑Öl – Retinol-Komplex",
+      price: 44.90,
+      text: `
+<h3>Wissenschaftlicher Hintergrund</h3>
+<p>Retinol ist ein Vitamin‑A‑Derivat, das in der Haut zu Retinal und schließlich zu Retinsäure metabolisiert wird. Es reguliert Keratinozytenproliferation und stimuliert Kollagensynthese.</p>
+<h3>Dermatologische Wirkung</h3>
+<ul>
+<li>Reduktion feiner Linien</li>
+<li>Verbesserung der Hautstruktur</li>
+<li>Erhöhung der Zellregeneration</li>
+<li>Regulierung der Talgproduktion</li>
+</ul>
+<h3>Inhaltsstoffe</h3>
+<ul>
+<li>Retinol (0,3 %)</li>
+<li>Squalan</li>
+<li>Vitamin E</li>
+</ul>
+<h3>Anwendung</h3>
+<p>Nur abends. Langsam einschleichen (2–3× pro Woche), danach Steigerung nach Verträglichkeit.</p>
+<h3>Sicherheit</h3>
+<p>Nicht in Schwangerschaft/Stillzeit. UV‑Schutz am Folgetag Pflicht.</p>
+`
+    },
+    "Fresh Scan": {
+      title: "Fresh Scan – Analyse & Typisierung",
+      price: 49,
+      text: `
+<h3>Wissenschaftlicher Hintergrund</h3>
+<p>Der Fresh Scan basiert auf dermatologischen Parametern wie TEWL, Sebumproduktion, Barrierestatus, pH‑Wert und Entzündungsneigung.</p>
+<h3>Was wird analysiert?</h3>
+<ul>
+<li>Lipidbarriere</li>
+<li>Hydratationslevel</li>
+<li>Sebumprofil</li>
+<li>Sensitivitätsindex</li>
+<li>Pigmentierungsneigung</li>
+</ul>
+<h3>Ergebnis</h3>
+<p>Ein wissenschaftlich fundiertes Hautprofil als Grundlage für alle weiteren Entscheidungen.</p>
+`
+    },
+    "Personal System": {
+      title: "Personal System – Individuelles Pflege-System",
+      price: 199,
+      text: `
+<h3>Wissenschaftlicher Hintergrund</h3>
+<p>Basierend auf dermatologischen Parametern wird ein algorithmisches Pflege‑System erstellt, das Wirkstoffkombinationen, Reihenfolgen und Dosierungen optimiert.</p>
+<h3>Was ist enthalten?</h3>
+<ul>
+<li>Wirkstoffanalyse</li>
+<li>Kombinationslogik</li>
+<li>Morgen-/Abendroutine</li>
+<li>Saisonale Anpassungen</li>
+</ul>
+<h3>Wissenschaftlicher Nutzen</h3>
+<p>Reduktion von Irritationen, Maximierung der Wirksamkeit, klare Struktur statt Trial‑and‑Error.</p>
+`
+    },
+    "Jahrespflegeplan": {
+      title: "Jahrespflegeplan – Saisonale Optimierung",
+      price: 399,
+      text: `
+<h3>Wissenschaftlicher Hintergrund</h3>
+<p>Die Hautbarriere reagiert stark auf Temperatur, Luftfeuchtigkeit und UV‑Index. Der Jahresplan berücksichtigt diese Variablen systematisch.</p>
+<h3>Enthalten</h3>
+<ul>
+<li>4 saisonale Anpassungen</li>
+<li>Wirkstoffrotation</li>
+<li>Barriereschutz‑Phasen</li>
+<li>Regenerationsphasen</li>
+</ul>
+<h3>Nutzen</h3>
+<p>Maximale Wirksamkeit über 12 Monate bei minimalem Irritationsrisiko.</p>
+`
+    },
+    "Fresh Lab Circle": {
+      title: "Fresh Lab Circle – Membership",
+      price: 29,
+      text: `
+<h3>Wissenschaftlicher Hintergrund</h3>
+<p>Regelmäßige Anpassung der Routine verbessert die Hautbarriere langfristig und reduziert inflammatorische Schübe.</p>
+<h3>Enthalten</h3>
+<ul>
+<li>Monatliche Analyse</li>
+<li>Wirkstoffupdates</li>
+<li>Priorisierung nach aktuellem Hautzustand</li>
+</ul>
+<h3>Nutzen</h3>
+<p>Kontinuierliche Optimierung statt statischer Routine.</p>
+`
+    }
+  };
+
+  const panel = document.getElementById("infoPanel");
+  const overlay = document.getElementById("infoPanelOverlay");
+  const titleEl = document.getElementById("infoTitle");
+  const contentEl = document.getElementById("infoContent");
+  const addBtn = document.getElementById("infoAddToCart");
+
+  function openInfo(name) {
+    const data = productInfo[name];
+    if (!data) return;
+
+    titleEl.innerText = data.title;
+    contentEl.innerHTML = data.text;
+
+    addBtn.onclick = () => {
+      addToCart(name, data.price);
+      closeInfo();
+    };
+
+    overlay.style.display = "block";
+    panel.classList.add("open");
+  }
+
+  function closeInfo() {
+    overlay.style.display = "none";
+    panel.classList.remove("open");
+  }
+
+  document.getElementById("closeInfoPanel").onclick = closeInfo;
+  overlay.onclick = closeInfo;
+
+  // PayPal
+  if (window.paypal) {
+    paypal.Buttons({
+      createOrder: (data, actions) => {
+        const total = calculateTotal();
+        if (total <= 0) {
+          alert("Bitte zuerst Produkte in den Warenkorb legen.");
+          return;
+        }
+        return actions.order.create({
+          purchase_units: [{
+            amount: { value: total.toFixed(2) }
+          }]
+        });
+      },
+      onApprove: (data, actions) => {
+        return actions.order.capture().then(details => {
+          const total = calculateTotal();
+          saveOrder({
+            date: new Date().toISOString(),
+            total: total,
+            items: cart
+          });
+          alert("Danke, " + details.payer.name.given_name + "!");
+          cart = [];
+          renderCart();
+        });
+      }
+    }).render("#paypal-buttons");
+  }
+
+  // Hamburger
+  document.getElementById("hamburger").addEventListener("click", function() {
+    const menu = document.getElementById("mobileMenu");
+    const isOpen = menu.style.display === "block";
+    menu.style.display = isOpen ? "none" : "block";
+    this.classList.toggle("active", !isOpen);
+  });
+
+  // Dark Mode
+  function applyDarkFromStorage() {
+    const saved = localStorage.getItem(DARK_MODE_KEY);
+    if (saved === "true") document.body.classList.add("dark");
+  }
+  document.getElementById("darkToggle").addEventListener("click", function() {
+    document.body.classList.toggle("dark");
+    const isDark = document.body.classList.contains("dark");
+    localStorage.setItem(DARK_MODE_KEY, isDark ? "true" : "false");
+  });
+
+  applyDarkFromStorage();
+  renderHistory();
+</script>
+
+</body>
+</html>
